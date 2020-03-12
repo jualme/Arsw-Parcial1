@@ -3,6 +3,8 @@ package edu.eci.arsw.moneylaundering;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class MoneyLaunderingThread extends Thread{
     private List<File> transactionFiles;
@@ -24,7 +26,14 @@ public class MoneyLaunderingThread extends Thread{
     @Override
     public synchronized void run(){
         int i = 0;
-        while (i < this.transactionFiles.size() && !this.moneyLaundering.isPaused()){
+        while (i < this.transactionFiles.size()){
+                while (this.moneyLaundering.isPaused()) {
+                    try {
+                        wait();
+                    } catch (InterruptedException ex) {
+                        Logger.getLogger(MoneyLaunderingThread.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }   
             File transactionFile = this.transactionFiles.get(i);
             List<Transaction> transactions = transactionReader.readTransactionsFromFile(transactionFile);
             for (Transaction transaction : transactions){
@@ -32,6 +41,7 @@ public class MoneyLaunderingThread extends Thread{
             }
             moneyLaundering.incrementAmountOfFilesProcessed();
             i++;
+            notifyAll();
         }
     }
 }

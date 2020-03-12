@@ -68,20 +68,21 @@ public class MoneyLaundering {
         return transactionAnalyzer.listOffendingAccounts();
     }
 
-    public synchronized void pauseProcess() throws InterruptedException {
+    public synchronized void pauseProcess() throws InterruptedException {        
         while (this.paused) {
             wait();
-        }
-        this.paused = false;
+        }        
+        this.paused = true;
         System.out.println("Paused");
     }
 
-    public synchronized void continueProcess() throws InterruptedException {
-        while (!this.paused) {
-            notifyAll();
+    public synchronized void continueProcess() throws InterruptedException { 
+        synchronized (this){
+            this.paused = false;
+            notifyAll();          
+            System.out.println("Continue");
         }
-        this.paused = true;
-        System.out.println("Continue");
+        
     }
     
     public boolean isPaused(){
