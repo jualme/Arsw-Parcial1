@@ -3,16 +3,17 @@ package edu.eci.arsw.moneylaundering;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 public class TransactionAnalyzer {
-    private HashMap<String, Integer> smallTransactionsPerAccount;
+    private ConcurrentHashMap<String, Integer> smallTransactionsPerAccount ;
     private static final int LAUNDERING_LIMIT_AMOUNT = 1250;
     private static final int LAUNDERING_LIMIT_COUNT = 100;
 
     public TransactionAnalyzer()
     {
-        smallTransactionsPerAccount = new HashMap<>();
+        smallTransactionsPerAccount = new ConcurrentHashMap<>();
     }
 
     public synchronized void addTransaction(Transaction transaction)
